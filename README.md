@@ -1,3 +1,3 @@
 # CampHelp
 
-Sign in, publich, comment, share experience and choose the best campground for your vacation.
+Sign in, publish, comment, share experience and choose the best campground for your vacation.
