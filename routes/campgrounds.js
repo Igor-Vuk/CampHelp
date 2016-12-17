@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Campground = require("../models/campground");
+var Comment = require("../models/comment");
 var middleware = require("../middleware")
 //=======================
 //CAMPGROUNDS ROUTES
@@ -83,11 +84,28 @@ router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
 
 //DESTROY - delete campground 
 router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res) {
-    Campground.findByIdAndRemove(req.params.id, function(err){
+    Campground.findById(req.params.id, function (err, foundCampground){
         if(err) {
             res.redirect("/campgrounds");
-        } else {
-            res.redirect("/campgrounds");
+        } else { //Remove comments related to campground from database
+            Comment.remove({
+                _id: {
+                    $in: foundCampground.comments
+                }
+            }, function (err, result) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+            //Remove the campground
+            foundCampground.remove(function (err, deletedCampground) {
+                if(err) {
+                    console.log(err);
+                    res.redirect ("/campgrounds");
+                } else {
+                    res.redirect("/campgrounds");
+                }
+            });
         }
     });
 });
