@@ -64,12 +64,8 @@ router.get("/:id", function(req, res) {
 
 //EDIT - shows edit form for one campground
 router.get("/:id/edit", middleware.checkCampgroundOwnership, function (req, res) {
-    Campground.findById(req.params.id, function (err, foundCampground) {
-        if(err) {
-            console.log(err);
-        }
-        res.render("campgrounds/edit", {campground: foundCampground});
-    });
+        //we pass req.foundCampground from checkCampgroundOwnership middleware
+        res.render("campgrounds/edit", {campground: req.foundCampground});
 });
 
 //UPDATE - update particual campground, then redirect somewhere
@@ -87,28 +83,23 @@ router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
 
 //DESTROY - delete campground 
 router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res) {
-    Campground.findById(req.params.id, function (err, foundCampground){
+    Comment.remove({ //Remove comments related to campground from database
+        _id: {
+            //we pass req.foundCampground from checkCampgroundOwnership middleware
+            $in: req.foundCampground.comments
+        }
+    }, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+    });
+    //Remove the campground
+    req.foundCampground.remove(function (err, deletedCampground) {
         if(err) {
+            console.log(err);
+            res.redirect ("/campgrounds");
+        } else {
             res.redirect("/campgrounds");
-        } else { //Remove comments related to campground from database
-            Comment.remove({
-                _id: {
-                    $in: foundCampground.comments
-                }
-            }, function (err, result) {
-                if (err) {
-                    console.log(err);
-                }
-            });
-            //Remove the campground
-            foundCampground.remove(function (err, deletedCampground) {
-                if(err) {
-                    console.log(err);
-                    res.redirect ("/campgrounds");
-                } else {
-                    res.redirect("/campgrounds");
-                }
-            });
         }
     });
 });
