@@ -70,7 +70,7 @@ router.put("/:comment_id", middleware.checkCommentOwnership, function(req, res) 
 
 //COMMENT DESTROY ROUTE
 router.delete("/:comment_id", middleware.checkCommentOwnership, function(req, res) {
-    Comment.findByIdAndRemove(req.params.comment_id, function(err) {
+    Comment.remove(req.foundComment, function(err) {
         if(err) {
             res.redirect("back");
         } else {
@@ -78,7 +78,7 @@ router.delete("/:comment_id", middleware.checkCommentOwnership, function(req, re
             Campground.findByIdAndUpdate(req.params.id, 
                 {
                     $pull: {
-                        comments: req.params.comment_id
+                        comments: req.foundComment._id
                     }
                 
                 }, function (err,data) {
