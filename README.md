@@ -2,8 +2,10 @@
 
 Sign in, publish, comment, share experience and choose the best campground for your vacation.
 
-Made in Node.js in Cloud9 IDE
+Requirements:
+Node.js
+Mongo.db
 
 * Note
-At the bottom of app.js 
+Change port liste
 app.listen(process.env.PORT, process.env.IP);
